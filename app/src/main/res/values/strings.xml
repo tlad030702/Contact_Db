@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Contact Database</string>
+    <string name="add_new_person">Add new person</string>
+</resources>
