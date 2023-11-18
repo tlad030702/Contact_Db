@@ -7,15 +7,20 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -28,6 +33,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -64,6 +70,28 @@ public class MainActivity extends AppCompatActivity {
         imageView = dialogView.findViewById(R.id.imageView);
         chooseImage = dialogView.findViewById(R.id.chooseImage);
 
+        Calendar calendar = Calendar.getInstance();
+        final int year = calendar.get(Calendar.YEAR);
+
+        dob_input.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatePickerDialog datePickerDialog = new DatePickerDialog(
+                        MainActivity.this, android.R.style.Theme_Holo_Light_Dialog_MinWidth, new DatePickerDialog.OnDateSetListener() {
+                        @Override
+                        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                            month = month + 1;
+                            String date = dayOfMonth+"/"+month+"/"+year;
+                            dob_input.setText(date);
+                        }
+                    }, year, 0, 1
+                );
+                datePickerDialog.getDatePicker().setMaxDate(calendar.getTimeInMillis());
+                datePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                datePickerDialog.show();
+            }
+        });
+
         contact_id = new ArrayList<>();
         contact_name = new ArrayList<>();
         contact_dob = new ArrayList<>();
@@ -81,10 +109,20 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 ImagePicker.with(MainActivity.this)
-                    .crop()	    			//Crop image(Optional), Check Customization for more option
-                    .compress(1024)			//Final image size will be less than 1 MB(Optional)
-                    .maxResultSize(1080, 1080)	//Final image resolution will be less than 1080 x 1080(Optional)
+                    .crop()
+                    .compress(1024)
+                    .maxResultSize(1080, 1080)
                     .start();
+            }
+        });
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ImagePicker.with(MainActivity.this)
+                        .crop()
+                        .compress(1024)
+                        .maxResultSize(1080, 1080)
+                        .start();
             }
         });
         add.setOnClickListener(new View.OnClickListener() {
@@ -96,6 +134,9 @@ public class MainActivity extends AppCompatActivity {
         save_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!validateName() | !validateDob() | !validateEmail()){
+                    return;
+                }
                 db.addContact(name_input.getText().toString().trim(),
                         dob_input.getText().toString().trim(),
                         email_input.getText().toString().trim(),
@@ -108,7 +149,6 @@ public class MainActivity extends AppCompatActivity {
                 imageView.setImageResource(R.drawable.baseline_person_24);
 
                 displayData();
-//                customAdapter.updateData(contact_id, contact_name, contact_dob, contact_email, contact_image);
                 customAdapter.notifyDataSetChanged();
             }
         });
@@ -141,9 +181,7 @@ public class MainActivity extends AppCompatActivity {
             Uri uri = data.getData();
             try {
                 InputStream inputStream = getContentResolver().openInputStream(uri);
-                System.out.println(inputStream);
                 imageBytes = getBytes(inputStream);
-                System.out.println(imageBytes);
                 imageView.setImageURI(uri);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -161,5 +199,38 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return byteBuffer.toByteArray();
+    }
+    private boolean validateName() {
+        String nameInput = name_input.getText().toString().trim();
+        if(nameInput.isEmpty()){
+            name_input.setError("Name can not be empty");
+            return false;
+        } else {
+            name_input.setError(null);
+            return true;
+        }
+    }
+    private boolean validateDob() {
+        String dobInput = dob_input.getText().toString().trim();
+        if (dobInput.isEmpty()) {
+            dob_input.setError("Date of Birth can not be empty");
+            return false;
+        } else {
+            dob_input.setError(null);
+            return true;
+        }
+    }
+    private boolean validateEmail() {
+        String emailInput = email_input.getText().toString().trim();
+        if (emailInput.isEmpty()) {
+            email_input.setError("Location can not be empty");
+            return false;
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(emailInput).matches()) {
+            email_input.setError("Please enter a valid email address");
+            return false;
+        } else {
+            email_input.setError(null);
+            return true;
+        }
     }
 }

@@ -13,7 +13,7 @@ import androidx.annotation.Nullable;
 public class DatabaseHelper extends SQLiteOpenHelper {
     private Context context;
     private static final String DATABASE_NAME = "Contact.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static final String TABLE_NAME = "MyContact";
     private static final String COLUMN_ID = "_id";
     private static final String COLUMN_NAME = "contact_name";
@@ -43,7 +43,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    void addContact(String name, String dob, String email, @Nullable byte[] avatarPath) {
+    void addContact(String name, String dob, String email, byte[] avatarPath) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
 

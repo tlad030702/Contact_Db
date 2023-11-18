@@ -57,7 +57,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_marginEnd="30dp"
-                        android:text="Email: "
+                        android:text="Dob: "
                         android:textColor="@color/material_on_background_disabled" />
 
                     <TextView
@@ -78,7 +78,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_marginEnd="30dp"
-                        android:text="Name: "
+                        android:text="Email: "
                         android:textColor="@color/material_on_background_disabled" />
 
                     <TextView

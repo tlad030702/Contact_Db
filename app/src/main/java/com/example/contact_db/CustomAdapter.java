@@ -38,13 +38,18 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
     }
 
     @Override
-    public void onBindViewHolder(@NonNull CustomAdapter.MyViewHolder holder, int position) {
+    public void onBindViewHolder(CustomAdapter.MyViewHolder holder, int position) {
         holder.contact_name.setText(String.valueOf(contact_name.get(position)));
         holder.contact_dob.setText(String.valueOf(contact_dob.get(position)));
         holder.contact_email.setText(String.valueOf(contact_email.get(position)));
         byte[] imageBytes = contact_image.get(position);
-        Bitmap imageBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-        holder.contact_image.setImageBitmap(imageBitmap);
+        if (imageBytes != null) {
+            Bitmap imageBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+            holder.contact_image.setImageBitmap(imageBitmap);
+        } else {
+            holder.contact_image.setImageResource(R.drawable.avatar1);
+        }
+
     }
 
     @Override
